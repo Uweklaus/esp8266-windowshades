@@ -17,8 +17,8 @@
 
 #include <ESP8266WiFi.h>
 
-const char* ssid = "klaushome";
-const char* password = "Johann1965";
+const char* ssid = "yourSSID";
+const char* password = "your_password";
 
 WiFiServer server(1337);  // 80
 
@@ -151,7 +151,6 @@ void setup() {
   taskManager.StartTask(&SWITCH1_DOWN_Task); 
   taskManager.StartTask(&SWITCH2_UP_Task); 
   taskManager.StartTask(&SWITCH2_DOWN_Task); 
-//  taskManager.StartTask(&checkPosition_Task);
   taskManager.StopTask(&Windows1_Move_Task);
   taskManager.StopTask(&Windows2_Move_Task);
   if (noWiFi)
