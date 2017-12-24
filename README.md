@@ -1,32 +1,36 @@
 # ESP8266 Window
 
-An Arduino code for ESP8266 module which trasform your standard window shade into wireless motorized one.
+An Arduino code for ESP8266 module which controls your motorized window shade into wireless motorized one.
 
 # Why
 
-Because I always wanted to have a motorized window shade. However, they used to be quite expensive for my budget so I decided to build my own. Plus, I really wanted to find a practical application for an ESP8266 module which was lying around for some time. It's nice to see what this tiny wireless module can actually do.
+I have motorized window shades in my house controlled by 2 switches for up and down. Few weeks ago I started with a homebridge on a Pi for apple homekit, working quite nicely.
+So I was looking for a possibility to control my shades via homekit and found the sketch of psled, which is quit nice, but I have the motors already installed and wanted to control up to 2 shades per ESP8266.
+So I used from psled only his HTTP part and wrote the controller part new using the Arduino IDE.
+To improve accuracy I used tasks. Position is controlled by moving time. I call the moving/controll task every total-move-time divided by 100. So I have to add or subtract only 1 of the current position.
+
 
 # Requirements
 
-- ESP8266 module (obviously, I used first generation ESP-01)
-- Continuous rotation servo (I used [PowerHD AR-3603HB](https://www.amazon.co.uk/Power-HD-AR-3603HB-Speed-Robot/dp/B00CBTXQVI))
-- Two limit switches with rollers (for detecting open / close position)
+- ESP8266 module (I used WeMos D1 mini)
+- double relay for Arduino (try to use the ones working with 3.3V)
+- switches were already mounted in the wall
+- 5V power supply (cheap mobile charger is working fine, but be aware that here you may have high voltage poweron the 5V side!!!!!!!!!!!!!!!!!  )
 
-Except above main components we will need as usual: a breadboard, couple wires and resistors and some power supply (keep in mind that ESP8266 works on 3.3V and my servo for example works on 5V).
+Keep in mind that the relays are switching high voltage of your window shades!!!!
 
-Last but not least, we need also a spare time, cause even if software and electronic parts are pretty straightforward, a physical mounting a servo on the shade could be quite tricky actually. Maybe 3D printer could help here.
+My shades have an automatic stop at the end, but I can not read this.
+
 
 # Installation
 
 First, download and install [ESP8266 Arduino](https://github.com/esp8266/Arduino) if you haven't done this before.
 
-Then connect everything electronically and prepare the valid mounting for both servo and limit switches.
-
-In my servo I have replaced the potentiometer with two 2k Ohm resistors and in this particular unit and this configuration the middle point seems to be around 85 degrees (not 90 like it ideally should be). Depending on servo you use either calibrate the pot accordingly or change above values in code.
+Connect the components, but be aware the high voltage!!! So don t do if you are not a professional.
 
 Finally, upload code from this repository to your ESP8266 module.
 
-You could probably start using your brand new motorized window shade by now although controlling it directly through HTTP requests could be quirky. Because of that you can check out the [Homebridge plugin](https://github.com/psled/homebridge-esp8266-window). It was created to allows you to integrate your ESP8266 module with Apple HomeKit platform and Siri.
+Check out the [Homebridge plugin](https://github.com/uweklaus/homebridge-esp8266-window2). It was created to allows you to integrate your ESP8266 module with Apple HomeKit platform and Siri.
 
 # Usage
 
@@ -52,7 +56,8 @@ Content-Type: application/json
 
 # TODO
 
-- Fix calculating open / close percentage. At the moment we are using a single timer for both opening / closing shade but this speed can vary. Moreover, that kind of method seems to be quite unreliable in long-term so finding something better would be appreciated.
+- Adding a AP webserver, if no WiFi is available to change the SSID and password
+- Adding a webserver, if connected to change the timings and read the current and targetPosition.
 
 # License
 
