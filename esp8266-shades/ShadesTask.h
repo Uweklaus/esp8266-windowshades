@@ -9,11 +9,12 @@ void stopWindow(bool _which);
 class MoveTask : public Task
 {
 public:
-    typedef void(*action)(bool window);
+    typedef void(*action)(bool window,int state);
 
-    MoveTask(action function,bool window) :
-        Task(MsToTaskTime(window_Up_Time[window]/100)), // check every 1% of total shades move time
+    MoveTask(action function,bool window, int state) :
+        Task(MsToTaskTime(window_Time[window+2*state]/100)), // check every 1% of total shades move time
         _window(window),
+        _state(state),
         _callback(function)
     { 
     };
@@ -21,13 +22,19 @@ public:
 private:
     const bool _window;
     const action _callback;
-//    PositionState _state;
-
+    int _state;
+    
     virtual bool OnStart()
     {
-      if (currentPosition[_window]<targetPosition[_window])       { positionState[_window]=PS_INCREASING; } //1
-      else if (currentPosition[_window]>targetPosition[_window])  { positionState[_window]=PS_DECREASING; } //0
-      else                                                        { positionState[_window]=PS_STOPPED;    } //2
+      if (currentPosition[_window]<targetPosition[_window])       { 
+        positionState[_window]=PS_INCREASING; //1
+        } 
+      else if (currentPosition[_window]>targetPosition[_window])  { 
+        positionState[_window]=PS_DECREASING; //0
+        } 
+      else                                                        { 
+        positionState[_window]=PS_STOPPED;    //2
+        } 
         
       Serial.println("start moving window "+String(_window)+" "+String(positionState[_window])); 
       return true;
@@ -35,11 +42,7 @@ private:
 
     virtual void OnUpdate(uint32_t deltaTime)
     {
-        if (TaskTimeToMs(deltaTime) > window_Up_Time[_window]/100*1.05)
-        {
-          Serial.println("ERROR: Task to slow..."); // Überprüfen ob Task schnell genug
-        }
-        
+              
         switch (positionState[_window])
         {
         case PS_DECREASING:

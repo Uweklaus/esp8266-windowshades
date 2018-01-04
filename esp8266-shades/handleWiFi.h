@@ -1,125 +1,72 @@
 // Handling WiFi and HTTP for window shades
 
-String shiftStringUntil(String& s, String untilString) {
-  String result;
-  int idx = s.indexOf(untilString);;
-  if (idx != -1) {
-    result = s.substring(0, idx);
-    s.remove(0, idx + untilString.length());
-  }
-  return result;
-}
+// functions to handle http requests
+void handleRoot() {
 
-HttpMethod parseHttpMethodString(String httpMethodStr) {
-  HttpMethod result;
-  if (httpMethodStr == "GET") {
-    result = HM_GET;
-  } else if (httpMethodStr == "POST") {
-    result = HM_POST;
-  } else {
-    result = HM_NONE;
-  }
-  return result;
-}
+  char temp[400];
+  int sec = millis() / 1000;
+  int min = sec / 60;
+  int hr = min / 60;
 
-void handleRequest(String request, String& response, String route,
-  HttpMethod httpMethod, String (*handler)(String)) {
-    if (response.length() > 0) {
-      return;
-    }
-
-    String reqHttpMethodString = shiftStringUntil(request, " ");
-    HttpMethod reqHttpMethod = parseHttpMethodString(reqHttpMethodString);
-
-    String reqRoute = shiftStringUntil(request, " ");
-
-    if (reqHttpMethod != httpMethod) {
-      return;
-    }
-
-    if (reqRoute != route) {
-      return;
-    }
-
-    shiftStringUntil(request, "\r\n\r\n");
-    String requestBody = request;
-
-    response = handler(requestBody);
-  }
-
-String createResponse(String responseBody) {
-  // Prepare the response
-    String response = "HTTP/1.1 200 OK\r\n";
-    response += "Content-Type: application/json\r\n";
-    response += "\r\n";
-    if (responseBody.length() > 0) {
-      response += responseBody;
-    }
-    return response;
-  }
-
-String createResponse() {
-    String responseBody;
-    String response = createResponse(responseBody);
-    return response;
-  }
-
-  String handleCurrentPosition(String requestBody) {
-    String responseBody = String(currentPosition[0]);    // hier muss der entsprechende Wert rein
-    String response = createResponse(responseBody);
-    return response;
-  }
-  String handleCurrentPosition1(String requestBody) {
-    String responseBody = String(currentPosition[1]);    // hier muss der entsprechende Wert rein
-    String response = createResponse(responseBody);
-    return response;
-  }
-
-  String handlePositionState(String requestBody) {
-    String responseBody = String(positionState[0]);   //hier auch
-    String response = createResponse(responseBody);
-    return response;
-  }
-  String handlePositionState1(String requestBody) {
-    String responseBody = String(positionState[1]);   //hier auch
-    String response = createResponse(responseBody);
-    return response;
-  }
+ Serial.println("root");
  
-  String handleTargetPositionBoth(String requestBody, bool _window) {
-    String response = createResponse();
+  snprintf ( temp, 400,
+"<html>\
+  <head>\
+    <meta http-equiv='refresh' content='5'/>\
+    <title>ESP8266 Rollo</title>\
+    <style>\
+      body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; }\
+    </style>\
+  </head>\
+  <body>\
+    <h1>Hello from Shades Master ESP8266!</h1>\
+    <p>Uptime: %02d:%02d:%02d</p>\    
+    <hl>_______________</hl>\
+  </body>\
+</html>",
 
-    // TODO: Pretty bad JSON parsing.
-    // We should really use a proper JSON parsing library here.
-    const String valueKey = "\"value\"";
-    int idx = requestBody.indexOf(valueKey);
-    if (idx == -1) {
-      return response;
-    }
-    requestBody.remove(0, idx + valueKey.length());
-    idx = requestBody.indexOf(':');
-    if (idx == -1) {
-      return response;
-    }
-    requestBody.remove(0, idx + 1);
-    idx = requestBody.indexOf('}');
-    if (idx == -1) {
-      return response;
-    }
-    String newTargetPositionStr = requestBody.substring(0, idx);
-    newTargetPositionStr.trim();
+    hr, min % 60, sec % 60
+  );
+  serverWS.send ( 200, "text/html", temp );
+}
 
-    int newTargetPosition = newTargetPositionStr.toInt();
+  void handleNotFound(){
+  String message = "File Not Found\n\n";
+  message += "URI: ";
+  message += serverWS.uri();
+  message += "\nMethod: ";
+  message += (serverWS.method() == HTTP_GET)?"GET":"POST";
+  message += "\nArguments: ";
+  message += serverWS.args();
+  message += "\n";
+  for (uint8_t i=0; i<serverWS.args(); i++){
+    message += " " + serverWS.argName(i) + ": " + serverWS.arg(i) + "\n";
+  }
+  serverWS.send(404, "text/plain", message);
+  Serial.println(message);
+  }
 
-    // if isNaN(newTargetPosition)
-    if (newTargetPosition == 0 && newTargetPositionStr != "0") {
-      return response;
+void handleTargetPosition(bool _window) {
+ 
+  Serial.println("post TP window " + String(_window)+"."+serverWS.args());
+    serverWS.send ( 200, "text/html", "" );
+
+  Serial.println(serverWS.uri());
+  Serial.println();
+  if (serverWS.hasArg("value") ){ 
+    int newTargetPosition = serverWS.arg("value").toInt();
+    if (newTargetPosition == 0 && serverWS.arg("value") != "0") {
+    Serial.println("hTP wrong argument"+String(serverWS.args())+"/"+String(serverWS.arg("value")));   
+      handleNotFound();
+      return;
     }
 
     if (newTargetPosition < 0 || newTargetPosition > 100
-      || newTargetPosition == targetPosition[_window]
       || (targetPosition[_window] == -1 && newTargetPosition == currentPosition[_window])) {
-      return response;
+      Serial.println("hTP out of range");         
+      handleNotFound();
+      return;
     }
 
     targetPosition[_window] = newTargetPosition;
@@ -128,25 +75,20 @@ String createResponse() {
     void openWindow(bool _window);
     
     Serial.println("Target position Window "+String(_window)+" :" + targetPosition[_window]);
-    if (newTargetPosition < currentPosition[_window])
-    {
+    if (newTargetPosition < currentPosition[_window]) {
       closeWindow(_window);
     }
-    if (newTargetPosition > currentPosition[_window])
-    {
+    if (newTargetPosition > currentPosition[_window]) {
       openWindow(_window);
     }
-
-    return response;
+    serverWS.send(200, "text/plain", "OK");
+  } 
+  else {
+    Serial.println("wrong argument");
+    handleNotFound();
   }
+}
 
-  String handleTargetPosition(String requestBody) {
-    String response = handleTargetPositionBoth(requestBody, 0);  
-    return response;
-  }
+void handleTargetPosition0 () {  handleNotFound(); handleTargetPosition(0);}
+void handleTargetPosition1 () {handleTargetPosition(1);}
 
-  String handleTargetPosition1(String requestBody) {
-    String response =  handleTargetPositionBoth(requestBody, 1);
-    return response;  
-  }
- 

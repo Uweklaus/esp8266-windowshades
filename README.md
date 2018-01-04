@@ -1,4 +1,4 @@
-# ESP8266 Window 2
+# ESP8266 Window
 
 An Arduino code for ESP8266 module which controls your motorized window shade into wireless motorized one.
 
@@ -46,6 +46,11 @@ GET /window/positionState HTTP/1.1
 
 - Target position
 ```
+GET /window/targetPosition HTTP/1.1
+```
+
+
+```
 POST /window/targetPosition HTTP/1.1
 Content-Type: application/json
 
@@ -53,6 +58,14 @@ Content-Type: application/json
   "value": 78
 }
 ```
+# DONE
+V 0.0.9 stable
+- running, but no targetPosition GET HttpMethod
+- Up and Down with same timing 
+
+V 0.1.0
+- read targetPosition by GET HttpMethod
+- Up and Down have different timings, to achieve differences in moving speed
 
 # TODO
 

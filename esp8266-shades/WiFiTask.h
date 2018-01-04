@@ -1,70 +1,48 @@
-// WiFi wird hier abgefragt in der loop mit dem Taskmanager
+// HTTP requests are defined here
 
 
-void Handle_Check_Client(uint32_t deltaTime) 
-{ 
-// Check if a client has connected
-  WiFiClient client = server.available();
-  if (!client) {
-    return;
-  }
-  // Check if a client has connected
-  Serial.println("New client");
-   while (!client.available()){
-    if (!client.connected()) {
-      Serial.println("Client disonnected available");
-      client.stop();
-   
-      return;
-    } 
-    delay(1);  
-  }
-  // Read the first line of the request
-  //String req = client.readStringUntil('\r');
-  String req;
-  while (client.available()) {
-    char c = client.read();
-    req += c;
-  }
-  Serial.println();
-  Serial.println("* "+req);
-  client.flush();
+serverWS.on("/", handleRoot);
+
+serverWS.on("/inline", [](){
+  serverWS.send(200, "text/plain", "this works as well");
+});
+
+serverWS.on("/window/0/currentPosition", HTTP_GET, [](){   
+  serverWS.send(200, "application/json", String(currentPosition[0]) );
+  Serial.println("get CP0 "+String(currentPosition[0]));
+  handleNotFound();
+});
+
+serverWS.on("/window/1/currentPosition", HTTP_GET, [](){     //HM_GET
+  serverWS.send(200, "application/json", String(currentPosition[1]) );
+  Serial.println("get CP1 "+String(currentPosition[1]));
+  });
+
+serverWS.on("/window/0/positionState", HTTP_GET, [](){     //HM_GET
+  serverWS.send(200, "application/json", String(positionState[0]) );
+  Serial.println("get PS0 "+String(positionState[0]));
+  });
+
+serverWS.on("/window/1/positionState", HTTP_GET, [](){     //HM_GET
+  serverWS.send(200, "application/json", String(positionState[1]) );
+  Serial.println("get PS1 "+String(positionState[1]));
+});
+
+serverWS.on("/window/0/targetPosition", HTTP_GET, [](){     //HM_GET
+  serverWS.send(200, "application/json", String(targetPosition[0]) );
+    Serial.println("get TP0 "+String(targetPosition[0]));
+});
+
+serverWS.on("/window/1/targetPosition", HTTP_GET, [](){     //HM_GET
+  serverWS.send(200, "application/json", String(targetPosition[1]) );
+  Serial.println("get TP1 "+String(targetPosition[1]));
+});
   
-  // Match the request
-  String res;
+serverWS.on("/window/0/targetSetPosition", HTTP_GET, handleTargetPosition0);
+  
+serverWS.on("/window/1/targetSetPosition", HTTP_GET, handleTargetPosition1);
 
-  handleRequest(req, res, "/window/0/currentPosition", HM_GET,
-    handleCurrentPosition);
 
-  handleRequest(req, res, "/window/0/positionState", HM_GET,
-    handlePositionState);
+serverWS.onNotFound(handleNotFound);
 
-  handleRequest(req, res, "/window/0/targetPosition", HM_POST,
-    handleTargetPosition);
-
-  handleRequest(req, res, "/window/1/currentPosition", HM_GET,
-    handleCurrentPosition1);
-
-  handleRequest(req, res, "/window/1/positionState", HM_GET,
-    handlePositionState1);
-
-  handleRequest(req, res, "/window/1/targetPosition", HM_POST,
-    handleTargetPosition1);
-
-  if (res.length() == 0) {
-    Serial.println("Invalid request" + req + res);
-    client.stop();
-     
-    return;
-  }
-  client.flush();
-
-  // Send the response to the client
-  client.print(res);
-  Serial.println("Client disonnected send" + String(res));
-
-  // The client will actually be disconnected
-  // when the function returns and 'client' object is detroyed
-        
-}
 

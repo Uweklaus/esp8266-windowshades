@@ -16,13 +16,11 @@ void Call_SWITCH (bool _window, Direction _dir)
   case PS_STOPPED:
     if (_dir == UP)
     {
- //     currentPosition [_window]=0; // Volle Zeit hochfahren
       targetPosition [_window]=100;
       openWindow(_window);
     }
     else
     {
- //     currentPosition [_window]=100; // Volle Zeit hochfahren
       targetPosition [_window]=0;
       closeWindow(_window);
     } 
