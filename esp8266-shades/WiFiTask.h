@@ -1,7 +1,13 @@
 // HTTP requests are defined here
 
 
-serverWS.on("/", handleRoot);
+serverWS.on("/", handleRoot); //main page
+
+serverWS.on("/setup/pin", handlePin);  //select pins for switches and relays
+
+serverWS.on("/setup/timing", handleTiming); //adjust timing for Up and Down of shades
+
+serverWS.on("/setup/WiFi", handleWiFi);  //set new SSID and password
 
 serverWS.on("/inline", [](){
   serverWS.send(200, "text/plain", "this works as well");
