@@ -21,7 +21,7 @@ void handleRoot() {
   </head>\
   <body>\
     <h1>Hello from Shades Master ESP8266!</h1>\
-    <p>Uptime: %02d:%02d:%02d</p>\    
+    <p>Uptime: %02d:%02d:%02d</p>\
     <hl>_______________</hl>\
   </body>\
 </html>",
@@ -30,6 +30,15 @@ void handleRoot() {
   );
   serverWS.send ( 200, "text/html", temp );
 }
+//select pins for switches and relays
+void handlePin() {
+}    
+//adjust timing for Up and Down of shades
+void handleTiming() {
+} 
+//set new SSID and password
+void handleWiFi() {
+}   
 
   void handleNotFound(){
   String message = "File Not Found\n\n";
