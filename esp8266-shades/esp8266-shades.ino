@@ -2,6 +2,16 @@
  *  This sketch demonstrates how to set up a simple HTTP-like server.
  */
 
+char* ssid="1234567890123456789012345678901234567890";
+char* password="A234567890123456789012345678901234567890";
+byte IPStatic [4] = {192,168,2,10};
+byte IPdns [4] = {192,168,2,1};
+byte IPSub [4] = {255,255,255,0};
+byte SwitchPin [4] = {5,4,0,2}; // UP_Window 1, DOWN, UP_Window 2, DOWN D1,D2,D3,D4
+byte RelayPin [4] = {12,13,14,16}; //UP_Window 1, DOWN, UP_Window 2, DOWN D6,D7,D5,D0
+long windowTime [4] = {1000,2000,3000,4000}; //Window 1Up, 2Up, 1Down, 2Down
+const char* ssidAP = "ESPap";
+const char* passwordAP = "Johann1965";
 
 #include "settings.h"
 
@@ -67,7 +77,7 @@ MoveTask Windows1_Move_Up_Task (Handle_Window1_Move,false,1);
 MoveTask Windows1_Move_Down_Task (Handle_Window1_Move,false,0);
 MoveTask Windows2_Move_Up_Task (Handle_Window2_Move,true,1);
 MoveTask Windows2_Move_Down_Task (Handle_Window2_Move,true,0);
-FunctionTask Check_Client_Task(Handle_Check_Client, MsToTaskTime(10));
+FunctionTask Check_Client_Task(Handle_Check_Client, MsToTaskTime(20));
 
 
 int wCounter = 0;
@@ -75,13 +85,25 @@ bool noWiFi = false;
 
 // functions to handle http requests
 #include "handleWiFi.h"
-
+#include "handleWiFiAP.h";
 /*
  * Setup
  */
 void setup() {
   Serial.begin(115200);
   delay(10);  // überspielt Zeichen beim Reset
+  Serial.println();
+  Serial.println("Starting...");
+
+  EEPROM.begin(512);
+  delay(10);
+  //EEPROM.write(0,0);
+  if (!loadConfig()) {
+    Serial.println("Standard values will be loaded");
+    loadStandardValues();
+  } else {
+    Serial.println("Config loaded");
+  }
 
   // Definition Eingangs und Ausgangs Pins, HIGH = nicht aktiv
   for (int i=0;i<4;i++) {
@@ -108,8 +130,8 @@ void setup() {
   // Connect to WiFi network
   Serial.print("Connecting to ");
   Serial.println(ssid);
-
-  WiFi.begin(ssid, password);
+  Serial.println(WiFi.SSID());
+  WiFi.begin(ssid,password);
   while (WiFi.status() != WL_CONNECTED) {
     wCounter += 1;
     delay(500);
@@ -121,7 +143,26 @@ void setup() {
     }
   }
   Serial.println("");
-  if (noWiFi) { Serial.println("WiFi not connected - Standalone"); }
+  if (noWiFi) { 
+    Serial.println("WiFi not connected - Standalone"); 
+    Serial.println("Configuring access point...");
+    WiFi.softAP(ssidAP, passwordAP);
+
+  IPAddress myIP = WiFi.softAPIP();
+  Serial.print("AP IP address: ");
+  Serial.println(myIP);
+  Serial.print("AP SSID: ");
+  Serial.println(ssidAP);
+  Serial.print("AP password: ");
+  Serial.println(passwordAP);
+  
+  serverWS.on("/", handleAPRoot);
+  serverWS.on("/ssid",handleAPSSID);
+  serverWS.on("/standard",loadStandardValuesAP);
+  
+  serverWS.begin();
+  Serial.println("HTTP AP server started"); 
+  }
   else { 
     Serial.println("WiFi connected");
     if (MDNS.begin("esp8266")) {
@@ -148,9 +189,7 @@ void setup() {
   taskManager.StopTask(&Windows1_Move_Down_Task);  
   taskManager.StopTask(&Windows2_Move_Up_Task);
   taskManager.StopTask(&Windows2_Move_Down_Task);
-  
-  if (noWiFi){ taskManager.StopTask(&Check_Client_Task); } // not listening to WiFi 
-  else { taskManager.StartTask(&Check_Client_Task); } //listening to WiFi 
+  taskManager.StartTask(&Check_Client_Task);  //listening to WiFi 
 
   Serial.println("Running...");
 }

@@ -12,7 +12,7 @@ public:
     typedef void(*action)(bool window,int state);
 
     MoveTask(action function,bool window, int state) :
-        Task(MsToTaskTime(window_Time[window+2*state]/100)), // check every 1% of total shades move time
+        Task(MsToTaskTime(100)), 
         _window(window),
         _state(state),
         _callback(function)
@@ -35,7 +35,7 @@ private:
       else                                                        { 
         positionState[_window]=PS_STOPPED;    //2
         } 
-        
+      setTimeInterval(windowTime[_window*2+_state]/100); // check every 1% of total shades move time
       Serial.println("start moving window "+String(_window)+" "+String(positionState[_window])); 
       return true;
     }

@@ -1,22 +1,27 @@
 // HTTP requests are defined here
 
 
-serverWS.on("/", handleRoot); //main page
+serverWS.on("/", handleRoot);
 
-serverWS.on("/setup/pin", handlePin);  //select pins for switches and relays
+serverWS.on("/standard",loadStandardValues);
 
-serverWS.on("/setup/timing", handleTiming); //adjust timing for Up and Down of shades
+serverWS.on("/root",handleAPRoot);
+serverWS.on("/ssid",handleAPSSID);
 
-serverWS.on("/setup/WiFi", handleWiFi);  //set new SSID and password
 
-serverWS.on("/inline", [](){
-  serverWS.send(200, "text/plain", "this works as well");
+serverWS.on("/favicon.ico", HTTP_GET, [](){   
+  Serial.println("get icon");
 });
+
+serverWS.on("/setupTime", handleTiming);
+serverWS.on("/setupPin", handlePin);
+serverWS.on("/Tpost", handleTPost);
+serverWS.on("/Ppost", handlePPost);
+serverWS.on("/save", handleSave);
 
 serverWS.on("/window/0/currentPosition", HTTP_GET, [](){   
   serverWS.send(200, "application/json", String(currentPosition[0]) );
   Serial.println("get CP0 "+String(currentPosition[0]));
-  handleNotFound();
 });
 
 serverWS.on("/window/1/currentPosition", HTTP_GET, [](){     //HM_GET
@@ -44,9 +49,9 @@ serverWS.on("/window/1/targetPosition", HTTP_GET, [](){     //HM_GET
   Serial.println("get TP1 "+String(targetPosition[1]));
 });
   
-serverWS.on("/window/0/targetSetPosition", HTTP_GET, handleTargetPosition0);
+serverWS.on("/window/0/targetSetPosition", HTTP_POST, handleTargetPosition0);
   
-serverWS.on("/window/1/targetSetPosition", HTTP_GET, handleTargetPosition1);
+serverWS.on("/window/1/targetSetPosition", HTTP_POST, handleTargetPosition1);
 
 
 serverWS.onNotFound(handleNotFound);
