@@ -39,22 +39,22 @@ Check out the [Homebridge plugin](https://github.com/uweklaus/homebridge-esp8266
 
 - Current position
 ```
-GET /window/currentPosition HTTP/1.1
+GET /window/0/currentPosition HTTP/1.1
 ```
 
 - Position state
 ```
-GET /window/positionState HTTP/1.1
+GET /window/0/positionState HTTP/1.1
 ```
 
 - Target position
 ```
-GET /window/targetPosition HTTP/1.1
+GET /window/0/targetPosition HTTP/1.1
 ```
 
 
 ```
-POST /window/targetSetPosition HTTP/1.1
+POST /window/1/targetSetPosition HTTP/1.1
 Content-Type: application/json
 
 value=78
@@ -75,6 +75,7 @@ V0.2.0
 - Standard data can be loaded
 
 # TODO
+- out of position after changing target position several times in a short time, e.g. by the homekit slider. 
 
 # License
 
