@@ -30,7 +30,7 @@ Connect the components, but be aware the high voltage!!! So don t do if you are 
 
 Finally, upload code from this repository to your ESP8266 module.
 
-Check out the [Homebridge plugin](https://github.com/uweklaus/homebridge-esp8266-window2). It was created to allows you to integrate your ESP8266 module with Apple HomeKit platform and Siri.
+Check out the [Homebridge plugin](https://github.com/uweklaus/homebridge-esp8266-windowshades). It was created to allows you to integrate your ESP8266 module with Apple HomeKit platform and Siri.
 
 # Usage
 
@@ -51,12 +51,10 @@ GET /window/targetPosition HTTP/1.1
 
 
 ```
-POST /window/targetPosition HTTP/1.1
+POST /window/targetSetPosition HTTP/1.1
 Content-Type: application/json
 
-{
-  "value": 78
-}
+value=78
 ```
 # DONE
 V 0.0.9 stable
@@ -67,10 +65,13 @@ V 0.1.0
 - read targetPosition by GET HttpMethod
 - Up and Down have different timings, to achieve differences in moving speed
 
-# TODO
+V0.2.0
+- Added a AP webserver, if no WiFi is available to change the SSID and password
+- SSID, Password and data are stored directly in the EEPROM
+- Webserver added to change the timings, pin asignment and read the current and targetPosition
+- Standard data can be loaded
 
-- Adding a AP webserver, if no WiFi is available to change the SSID and password
-- Adding a webserver, if connected to change the timings and read the current and targetPosition.
+# TODO
 
 # License
 
