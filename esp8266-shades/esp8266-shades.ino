@@ -11,7 +11,7 @@ byte SwitchPin [4] = {5,4,0,2}; // UP_Window 1, DOWN, UP_Window 2, DOWN D1,D2,D3
 byte RelayPin [4] = {12,13,14,16}; //UP_Window 1, DOWN, UP_Window 2, DOWN D6,D7,D5,D0
 long windowTime [4] = {1000,2000,3000,4000}; //Window 1Up, 2Up, 1Down, 2Down
 const char* ssidAP = "ESPap";
-const char* passwordAP = "Johann1965";
+const char* passwordAP = "YOURPASSWORD";
 
 #include "settings.h"
 
