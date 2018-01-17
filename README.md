@@ -1,3 +1,4 @@
+
 # ESP8266 Window
 
 An Arduino code for ESP8266 module which controls your motorized window shade into wireless motorized one.
@@ -29,6 +30,8 @@ First, download and install [ESP8266 Arduino](https://github.com/esp8266/Arduino
 Connect the components, but be aware the high voltage!!! So don t do if you are not a professional.
 
 Finally, upload code from this repository to your ESP8266 module.
+
+Do not forget to change the password for the AP in the ino file and the standard SSID and password in the settings.h file.
 
 Check out the [Homebridge plugin](https://github.com/uweklaus/homebridge-esp8266-windowshades). It was created to allows you to integrate your ESP8266 module with Apple HomeKit platform and Siri.
 
