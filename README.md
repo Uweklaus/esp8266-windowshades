@@ -76,7 +76,7 @@ V0.2.0
 
 # TODO
 - out of position after changing target position several times in a short time, e.g. by the homekit slider. 
-
+- switch off second wifi when connected to network
 # License
 
 ISC
