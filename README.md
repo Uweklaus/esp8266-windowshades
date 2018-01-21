@@ -25,6 +25,8 @@ My shades have an automatic stop at the end, but I can not read this.
 
 # Installation
 
+
+
 First, download and install [ESP8266 Arduino](https://github.com/esp8266/Arduino) if you haven't done this before.
 
 Connect the components, but be aware the high voltage!!! So don t do if you are not a professional.
@@ -74,9 +76,12 @@ V0.2.0
 - Webserver added to change the timings, pin asignment and read the current and targetPosition
 - Standard data can be loaded
 
+V0.2.1
+- switched off second wifi (AP) when connected to network
+
 # TODO
 - out of position after changing target position several times in a short time, e.g. by the homekit slider. 
-- switch off second wifi when connected to network
+
 # License
 
 ISC
