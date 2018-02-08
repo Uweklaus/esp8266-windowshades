@@ -1,5 +1,5 @@
 
-# ESP8266 Window
+# ESP8266 Window Shades
 
 An Arduino code for ESP8266 module which controls your motorized window shade into wireless motorized one.
 
