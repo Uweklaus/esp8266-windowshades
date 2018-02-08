@@ -35,7 +35,7 @@ Finally, upload code from this repository to your ESP8266 module.
 
 Do not forget to change the password for the AP in the ino file and the standard SSID and password in the settings.h file.
 
-Check out the [Homebridge plugin](https://github.com/Uweklaus/esp8266-windowshades). It was created to allows you to integrate your ESP8266 module with Apple HomeKit platform and Siri.
+Check out the [Homebridge plugin](https://github.com/Uweklaus/homebridge-esp-windowshades). It was created to allows you to integrate your ESP8266 module with Apple HomeKit platform and Siri.
 
 # Usage
 
