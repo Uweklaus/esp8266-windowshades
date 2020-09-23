@@ -1,17 +1,17 @@
 /*
- *  This sketch demonstrates how to set up a simple HTTP-like server.
+ *  ESP8266 as WLAN chip for motorized window shades driven by mechanical switches and homekit.
  */
 
-char* ssid="1234567890123456789012345678901234567890";
-char* password="A234567890123456789012345678901234567890";
-byte IPStatic [4] = {192,168,2,10};
-byte IPdns [4] = {192,168,2,1};
-byte IPSub [4] = {255,255,255,0};
-byte SwitchPin [4] = {5,4,0,2}; // UP_Window 1, DOWN, UP_Window 2, DOWN D1,D2,D3,D4
-byte RelayPin [4] = {12,13,14,16}; //UP_Window 1, DOWN, UP_Window 2, DOWN D6,D7,D5,D0
-long windowTime [4] = {1000,2000,3000,4000}; //Window 1Up, 2Up, 1Down, 2Down
-const char* ssidAP = "ESPap";
-const char* passwordAP = "Johann1965";
+char* ssid="1234567890123456789012345678901234567890";          // placeholder for SSID
+char* password="A234567890123456789012345678901234567890";      // placeholder for the WIFI Password
+byte IPStatic [4] = {192,168,2,10};                             // your static IP-Address
+byte IPdns [4] = {192,168,2,1};                                 // your DNS IP-Address
+byte IPSub [4] = {255,255,255,0};                               // your subnet mask
+byte SwitchPin [4] = {5,4,0,2};                                 // Switch PIN/PORT Numbers: UP_Window 1, DOWN, UP_Window 2, DOWN D1,D2,D3,D4
+byte RelayPin [4] = {12,13,14,16};                              // Relay PIN/PORT Numbers: UP_Window 1, DOWN, UP_Window 2, DOWN D6,D7,D5,D0
+long windowTime [4] = {1000,2000,3000,4000};                    // Timing in ms, Window 1Up, 2Up, 1Down, 2Down
+const char* ssidAP = "ESPap";                                   // your SSID of the accesspoint(AP) if no WIFI connection established
+const char* passwordAP = "Johann1965";                          // your AP password
 
 #include "settings.h"
 
@@ -23,9 +23,9 @@ const char* passwordAP = "Johann1965";
 // WiFiServer server(1337);  // 80
 ESP8266WebServer serverWS(80);
 
-#include <Task.h> // für  Taskmanager Schaltertasks
+#include <Task.h>                                               // für  Taskmanager Schaltertasks
 // include sub files
-#include "ButtonTask.h" // this implements the button task
+#include "ButtonTask.h"                                         // this implements the button task
 
 enum PositionState {
   PS_DECREASING = 0,
@@ -54,7 +54,7 @@ int targetPosition [2] = {100,100};
 PositionState positionState [2] = {PS_STOPPED, PS_STOPPED};
 
 TaskManager taskManager;
-#include "ShadesTask.h"  // muss hier stehen, da taskManager verwendet wird
+#include "ShadesTask.h"                             // muss hier stehen, da taskManager verwendet wird
 
 
 void Handle_SWITCH1_UP(ButtonState state);
@@ -113,16 +113,16 @@ void setup() {
   }
   
   Serial.println("");  
-  Serial.println("Firmware V 0.1.0");
+  Serial.println("Firmware V 0.2.1");
   Serial.println("Pin I/O state defined");
   Serial.println("");
   Serial.println("Shades should be initially open...");
   Serial.println("");
   
   // config static IP
-  IPAddress ip(IPStatic[0],IPStatic[1],IPStatic[2],IPStatic[3]); // where xx is the desired IP Address
-  IPAddress gateway(IPdns[0],IPdns[1],IPdns[2],IPdns[3]); // set gateway to match your network
-  IPAddress subnet(IPSub[0],IPSub[1],IPSub[2],IPSub[3]); // set subnet mask to match your network
+  IPAddress ip(IPStatic[0],IPStatic[1],IPStatic[2],IPStatic[3]);  // where xx is the desired IP Address
+  IPAddress gateway(IPdns[0],IPdns[1],IPdns[2],IPdns[3]);         // set gateway to match your network
+  IPAddress subnet(IPSub[0],IPSub[1],IPSub[2],IPSub[3]);          // set subnet mask to match your network
   WiFi.config(ip, gateway, subnet);
   Serial.print(F("Setting static ip to : "));
   Serial.println(ip);
