@@ -1,6 +1,8 @@
-// config load and save
+// config load, save, load default values
+// Routinen zum Laden und Speichern der aktuellen Konfiguration in das EEPROM
+// sowie zum laden einer default-Konfiguration
+//
 #include <EEPROM.h>
-
 
 bool loadConfig() {
   int address=2,delta=40;
@@ -100,8 +102,8 @@ void saveConfig() {
 }
 
 void loadStandardValues(){
-  ssid = "YOUR_SSID";
-  password = "YOURPASSWORD";
+  ssid = "YOUR_SSID";         // Hier sollte der Name des Standard WLANs eingetragen werden
+  password = "YOURPASSWORD";  // Passwort des Standard WLANs
   IPStatic[3] = 10;
   SwitchPin[0] = 0;
   SwitchPin[1] = 2;
@@ -115,7 +117,7 @@ void loadStandardValues(){
   windowTime[1] = 10000;
   windowTime[2] = 5000;
   windowTime[3] = 10000;
-  saveConfig();
+  saveConfig();             // Die obigen Standard Werte werden in das EEPROM gespeichert
   Serial.println("Standard Config set");  
 }
 
