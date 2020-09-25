@@ -86,18 +86,20 @@ bool noWiFi = false;
 // functions to handle http requests
 #include "handleWiFi.h"
 #include "handleWiFiAP.h";
-/*
- * Setup
- */
+
+// Setup 
+
 void setup() {
   Serial.begin(115200);
-  delay(10);  // überspielt Zeichen beim Reset
+  delay(10);  // überspielt Zeichen beim Reset in der seriellen Ausgabe
   Serial.println();
   Serial.println("Starting...");
 
   EEPROM.begin(512);
   delay(10);
   //EEPROM.write(0,0);
+  
+  // Konfiguration aus dem EEPROM wird versucht zu laden
   if (!loadConfig()) {
     Serial.println("Standard values will be loaded");
     loadStandardValues();
@@ -134,14 +136,14 @@ void setup() {
   WiFi.mode(WIFI_STA);
   WiFi.hostname("Rollo"+String(IPStatic[3]));
   
-  WiFi.begin(ssid,password);
-  while (WiFi.status() != WL_CONNECTED) {
-    wCounter += 1;
-    delay(500);
+  WiFi.begin(ssid,password);                        // WIFI verbinden
+  while (WiFi.status() != WL_CONNECTED) {           // Verbunden?
+    wCounter += 1;                                  // Zähler für Versuche erhöhen
+    delay(500);                                     // Warten bis neuer Versuch 
     Serial.print(".");
-    if (wCounter > 30) {
+    if (wCounter > 30) {                            // 30x Versuchen 
       wCounter=0;
-      noWiFi=true;
+      noWiFi=true;                                  // keine WIFI Verbindung
       break;
     }
   }
